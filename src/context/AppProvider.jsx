@@ -18,10 +18,21 @@ export function AppProvider({ children }) {
         ? d.bookings
         : DEFAULT_BOOKINGS.map((b) => ({ ...b }))
 
+    // Keep existing user edits, but backfill any newly introduced seed startups.
+    const seedStartups = createSeedData().startups
+    const existingStartups = d.startups || []
+    const existingById = new Map(existingStartups.map((s) => [s.id, s]))
+    const seedIds = new Set(seedStartups.map((s) => s.id))
+    const mergedSeedStartups = seedStartups.map((seed) =>
+      existingById.has(seed.id) ? { ...seed, ...existingById.get(seed.id) } : { ...seed }
+    )
+    const customStartups = existingStartups.filter((s) => !seedIds.has(s.id))
+    const mergedStartups = [...mergedSeedStartups, ...customStartups]
+
     return {
       ...d,
       bookings,
-      startups: d.startups.map((s) => {
+      startups: mergedStartups.map((s) => {
         let next = { ...s }
         if (s.assumptions?.length && !s.assumptions[0]?.category) {
           next = { ...next, assumptions: DEFAULT_ASSUMPTIONS.map((a) => ({ ...a })) }
