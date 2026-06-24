@@ -3051,16 +3051,442 @@ body {
 .mm-pay-status.paid { color: #12b76a; }
 .mm-pay-status.unpaid { color: #f59e0b; }
 
-@media (max-width: 900px) {
+/* ── Startup Match Studio ── */
+.ms-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 20px;
+  align-items: start;
+}
+.ms-deck-col { display: flex; flex-direction: column; gap: 0; }
+.ms-panel-col { display: flex; flex-direction: column; gap: 16px; }
+.ms-deck-card { padding: 20px 20px 16px; }
+.ms-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 160px;
+  gap: 10px;
+  margin: 14px 0 10px;
+}
+.ms-progress-bar {
+  height: 6px; border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden; margin-bottom: 6px;
+}
+.ms-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fdb022, #facc15);
+  border-radius: inherit; transition: width 0.25s ease;
+}
+.ms-progress-label {
+  display: flex; justify-content: space-between; margin-bottom: 14px;
+}
+.ms-deck-count {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.ms-deck-count-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+.ms-empty-deck {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; min-height: 320px; text-align: center; padding: 20px;
+}
+.ms-empty-icon { font-size: 40px; line-height: 1; margin-bottom: 4px; }
+.ms-stack-wrap { display: flex; flex-direction: column; gap: 16px; }
+/* Outer glow tray — purely decorative */
+.ms-stack-tray {
+  position: relative;
+  padding: 28px 8px 8px;
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(253, 176, 34, 0.08) 0%, transparent 60%),
+    rgba(8, 14, 26, 0.50);
+}
+.ms-stack {
+  position: relative;
+  height: 430px;
+}
+.ms-card {
+  position: absolute; inset: 0;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background:
+    radial-gradient(ellipse at 85% 8%, rgba(253, 176, 34, 0.13) 0%, transparent 50%),
+    rgba(14, 22, 38, 0.72);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.40),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.30) inset;
+  padding: 22px 22px 18px;
+  display: flex; flex-direction: column; gap: 14px;
+  user-select: none; touch-action: pan-y; overflow: hidden;
+  will-change: transform;
+}
+.ms-card-top { z-index: 3; cursor: grab; }
+.ms-card-top:active { cursor: grabbing; }
+.ms-card-back-1 {
+  z-index: 2;
+  transform: translateY(12px) scale(0.972);
+  opacity: 0.55;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.ms-card-back-2 {
+  z-index: 1;
+  transform: translateY(24px) scale(0.944);
+  opacity: 0.30;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.ms-stamp {
+  position: absolute; top: 16px;
+  padding: 6px 12px; border-radius: 999px; border: 2px solid;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
+  opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
+}
+.ms-stamp.show { opacity: 1; }
+.ms-stamp-pass { left: 16px; color: #ef4444; border-color: #ef4444; background: rgba(239,68,68,0.10); transform: rotate(-14deg); }
+.ms-stamp-like { right: 16px; color: #16a34a; border-color: #16a34a; background: rgba(22,163,74,0.10); transform: rotate(12deg); }
+.ms-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.ms-card-name { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
+.ms-fit-badge {
+  flex-shrink: 0; font-size: 13px; font-weight: 700;
+  color: var(--accent); background: rgba(253,176,34,0.12);
+  border: 1px solid rgba(253,176,34,0.28); border-radius: 999px; padding: 4px 12px;
+}
+.ms-card-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 9px 12px; border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(4px);
+}
+.ms-card-row-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+}
+.ms-card-block {
+  padding: 11px 12px; border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  display: flex; flex-direction: column; gap: 7px;
+}
+.ms-card-desc { margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.ms-card-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.mentor-match-pill {
+  font-size: 11px; color: var(--text-secondary);
+  border: 1px solid color-mix(in oklab, var(--accent) 18%, var(--border));
+  border-radius: 999px; padding: 3px 9px; background: rgba(253,176,34,0.06);
+}
+.ms-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ms-btn-pass, .ms-btn-interest {
+  height: 48px; border-radius: 14px;
+  font-size: 14px; font-weight: 700; font-family: inherit;
+  cursor: pointer; border: 2px solid; transition: all 0.15s ease;
+}
+.ms-btn-pass { color: #ef4444; border-color: #ef4444; background: rgba(239,68,68,0.08); }
+.ms-btn-pass:hover { background: rgba(239,68,68,0.16); }
+.ms-btn-interest { color: #16a34a; border-color: #16a34a; background: rgba(22,163,74,0.08); }
+.ms-btn-interest:hover { background: rgba(22,163,74,0.16); }
+.ms-tip { text-align: center; }
+.ms-panel-card { display: flex; flex-direction: column; gap: 12px; }
+.ms-panel-empty { padding: 4px 0; }
+.ms-avail-alert {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px; border: 1px solid rgba(245,158,11,0.35);
+  background: rgba(245,158,11,0.07); border-radius: 12px;
+  font-size: 13px; font-weight: 600;
+}
+.ms-icard-list { display: flex; flex-direction: column; gap: 10px; }
+.ms-icard {
+  border: 1px solid color-mix(in oklab, var(--accent) 14%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--bg-elevated) 88%, #0f172a 12%);
+  overflow: hidden;
+}
+.ms-icard-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; padding: 12px 14px;
+}
+.ms-icard-title { flex: 1; min-width: 0; }
+.ms-icard-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+.ms-icard-name-row strong { font-size: 14px; }
+.ms-icard-meta { font-size: 12px; color: var(--text-muted); margin: 0; }
+.ms-icard-toggle {
+  flex-shrink: 0; font-size: 12px; font-weight: 600; font-family: inherit;
+  color: var(--accent); background: rgba(253,176,34,0.08);
+  border: 1px solid rgba(253,176,34,0.22); border-radius: 8px;
+  padding: 5px 10px; cursor: pointer; white-space: nowrap; transition: background 0.12s;
+}
+.ms-icard-toggle:hover { background: rgba(253,176,34,0.16); }
+.ms-icard-body {
+  padding: 12px 14px 14px;
+  border-top: 1px solid color-mix(in oklab, var(--accent) 10%, var(--border));
+  display: flex; flex-direction: column; gap: 10px;
+}
+.ms-icard-field { display: flex; flex-direction: column; gap: 4px; }
+.ms-icard-field p { margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.ms-icard-field span { font-size: 13px; }
+.ms-icard-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--text-muted);
+}
+.ms-icard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ms-icard-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.ms-icard-actions {
+  display: flex; gap: 8px;
+  padding: 10px 14px 12px;
+  border-top: 1px solid color-mix(in oklab, var(--accent) 8%, var(--border));
+}
+.ms-icard-actions .btn { flex: 1; }
+.ms-overview-card { margin-top: 4px; }
+
+/* ← keep old mentor-match-structured class unused but harmless */
+.mentor-match-structured {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.7fr) minmax(0, 1.3fr);
+  gap: 20px;
+}
+.mentor-match-sidebar {
+  max-height: 840px;
+  overflow: auto;
+}
+.mentor-swipe-card {
+  min-height: 640px;
+  border: 1px solid color-mix(in oklab, var(--accent) 22%, var(--border));
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+}
+.mentor-availability-alert {
+  border: 1px solid color-mix(in oklab, #f59e0b 38%, var(--border));
+  background: rgba(245, 158, 11, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.mentor-deck-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px auto;
+  gap: 10px;
+  margin: 6px 0 12px;
+}
+.mentor-deck-search { min-width: 0; }
+.mentor-progress-shell {
+  border: 1px solid color-mix(in oklab, var(--accent) 16%, var(--border));
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: color-mix(in oklab, var(--bg-elevated) 90%, #0f172a 10%);
+  margin-bottom: 12px;
+}
+.mentor-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.mentor-progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.mentor-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fdb022 0%, #facc15 100%);
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+.mentor-deck-wrap { padding-top: 4px; }
+.mentor-deck-stack {
+  position: relative;
+  height: 575px;
+  max-width: 590px;
+  margin: 0 auto;
+}
+.mentor-tinder-card {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in oklab, var(--accent) 20%, var(--border));
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(253, 176, 34, 0.12), transparent 42%),
+    linear-gradient(180deg, color-mix(in oklab, var(--bg-card) 90%, #0b1220 10%) 0%, #0d1423 100%);
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.34);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  user-select: none;
+  touch-action: pan-y;
+}
+.mentor-tinder-card.top {
+  z-index: 3;
+  cursor: grab;
+}
+.mentor-tinder-card.top:active {
+  cursor: grabbing;
+}
+.mentor-tinder-card.behind-1 {
+  z-index: 2;
+  transform: translateY(12px) scale(0.982);
+  opacity: 0.82;
+}
+.mentor-tinder-card.behind-2 {
+  z-index: 1;
+  transform: translateY(22px) scale(0.964);
+  opacity: 0.62;
+}
+.tinder-stamp {
+  position: absolute;
+  top: 14px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 2px solid;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  transform: rotate(-16deg);
+  transition: opacity 0.12s ease;
+}
+.tinder-stamp.show { opacity: 1; }
+.tinder-stamp.pass {
+  left: 14px;
+  color: #ef4444;
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
+.tinder-stamp.like {
+  right: 14px;
+  color: #16a34a;
+  border-color: #16a34a;
+  background: rgba(22, 163, 74, 0.14);
+  transform: rotate(14deg);
+}
+.mentor-swipe-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mentor-card-heading h2 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+.mentor-card-heading p {
+  margin: 4px 0 0;
+}
+.mentor-swipe-top h2 {
+  margin: 0;
+  font-size: 26px;
+}
+.mentor-swipe-meta {
+  padding: 11px 12px;
+  border: 1px solid color-mix(in oklab, var(--accent) 12%, var(--border));
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.015);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.mentor-swipe-meta p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+.mentor-swipe-reasons {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.mentor-match-pill {
+  font-size: 12px;
+  color: var(--text-secondary);
+  border: 1px solid color-mix(in oklab, var(--accent) 16%, var(--border));
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(253, 176, 34, 0.07);
+}
+.mentor-deck-subhead {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 4px;
+}
+.mentor-swipe-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.tinder-actions {
+  margin-top: 14px;
+}
+.tinder-actions .btn:last-child {
+  grid-column: span 2;
+}
+.mentor-interest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.mentor-interest-row {
+  border: 1px solid color-mix(in oklab, var(--accent) 12%, var(--border));
+  border-radius: 12px;
+  padding: 12px;
+  background: color-mix(in oklab, var(--bg-elevated) 84%, #0f172a 16%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mentor-interest-main p {
+  margin: 4px 0 0;
+}
+.mentor-interest-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mentor-all-matches-card {
+  margin-top: 16px;
+}
+
+@media (max-width: 960px) {
   .mm-profile-body { grid-template-columns: 1fr; }
   .mm-profile-main { border-right: none; border-bottom: 1px solid var(--border); }
   .mm-form-grid { grid-template-columns: 1fr; }
+  .ms-layout { grid-template-columns: 1fr; }
+  .ms-panel-col { flex-direction: row; flex-wrap: wrap; }
+  .ms-panel-card { flex: 1 1 300px; }
+  .ms-avail-alert { flex-direction: column; align-items: flex-start; }
+  .ms-stack { height: 520px; }
 }
 @media (max-width: 640px) {
   .mm-mentor-grid { grid-template-columns: 1fr; }
   .mm-stats-row { gap: 8px; }
   .mm-stat-pill { min-width: 100px; }
   .mm-page-header { flex-direction: column; gap: 12px; }
+  .ms-toolbar { grid-template-columns: 1fr; }
+  .ms-actions { grid-template-columns: 1fr 1fr; }
+  .ms-panel-col { flex-direction: column; }
+  .ms-stack { height: 540px; }
+  .ms-card-name { font-size: 22px; }
+  .ms-icard-grid { grid-template-columns: 1fr; }
 }
 
 /* ── Booking / profile pages ── */

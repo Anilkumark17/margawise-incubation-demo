@@ -11,6 +11,7 @@ const NAV = {
   ],
   mentor: [
     { to: '/mentor/dashboard', label: 'Dashboard', icon: '◫' },
+    { to: '/mentor/matches', label: 'Matches', icon: '⇄' },
     { to: '/mentor/requests', label: 'Requests', icon: '✉' },
     { to: '/mentor/profile', label: 'Profile', icon: '◉' },
     { to: '/mentor/availability', label: 'Availability', icon: '◷' },

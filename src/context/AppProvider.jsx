@@ -32,6 +32,7 @@ export function AppProvider({ children }) {
     return {
       ...d,
       bookings,
+      mentorStartupActions: d.mentorStartupActions || [],
       startups: mergedStartups.map((s) => {
         let next = { ...s }
         if (s.assumptions?.length && !s.assumptions[0]?.category) {
@@ -72,6 +73,13 @@ export function AppProvider({ children }) {
         }
         return next
       }),
+      mentors: (d.mentors || []).map((mentor) => ({
+        ...mentor,
+        projectHighlights: Array.isArray(mentor.projectHighlights) ? mentor.projectHighlights : [],
+        previousStartupsByDomain: Array.isArray(mentor.previousStartupsByDomain)
+          ? mentor.previousStartupsByDomain
+          : [],
+      })),
     }
   }
 
@@ -505,6 +513,35 @@ export function AppProvider({ children }) {
 
   const updateMentorStatus = (mentorId, status) => updateMentor(mentorId, { status })
 
+  const setMentorStartupInterest = (mentorId, startupId, decision) => {
+    if (!mentorId || !startupId || !decision) return
+    update((d) => {
+      const existing = d.mentorStartupActions || []
+      const next = existing.filter((a) => !(a.mentorId === mentorId && a.startupId === startupId))
+      return {
+        ...d,
+        mentorStartupActions: [
+          ...next,
+          {
+            mentorId,
+            startupId,
+            decision,
+            decidedAt: new Date().toISOString(),
+          },
+        ],
+      }
+    })
+  }
+  const clearMentorStartupInterest = (mentorId, startupId) => {
+    if (!mentorId || !startupId) return
+    update((d) => ({
+      ...d,
+      mentorStartupActions: (d.mentorStartupActions || []).filter(
+        (action) => !(action.mentorId === mentorId && action.startupId === startupId)
+      ),
+    }))
+  }
+
   const resetApp = () => setData(resetData(createSeedData()))
 
   return (
@@ -541,6 +578,8 @@ export function AppProvider({ children }) {
         updateStageNote,
         markStageEntrySeen,
         updateMentorStatus,
+        setMentorStartupInterest,
+        clearMentorStartupInterest,
         resetApp,
       }}
     >

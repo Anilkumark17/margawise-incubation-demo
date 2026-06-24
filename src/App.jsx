@@ -15,6 +15,7 @@ import MentorStartupReport from './pages/mentor/MentorStartupReport'
 import MentorProfile from './pages/mentor/MentorProfile'
 import Availability from './pages/mentor/Availability'
 import MentorRequests from './pages/mentor/MentorRequests'
+import StartupMatches from './pages/mentor/StartupMatches'
 import IncubationDashboard from './pages/incubation/IncubationDashboard'
 import ApplicationsHub from './pages/incubation/ApplicationsHub'
 import CohortHub from './pages/incubation/CohortHub'
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/founder/booking/success" element={<FounderRoute><BookingSuccess /></FounderRoute>} />
 
           <Route path="/mentor/dashboard" element={<ProtectedRoute role="mentor"><MentorDashboardHome /></ProtectedRoute>} />
+          <Route path="/mentor/matches" element={<ProtectedRoute role="mentor"><StartupMatches /></ProtectedRoute>} />
           <Route path="/mentor/startup/:id/report" element={<ProtectedRoute role="mentor"><MentorStartupReport /></ProtectedRoute>} />
           <Route path="/mentor/requests" element={<ProtectedRoute role="mentor"><MentorRequests /></ProtectedRoute>} />
           <Route path="/mentor/profile" element={<ProtectedRoute role="mentor"><MentorProfile /></ProtectedRoute>} />

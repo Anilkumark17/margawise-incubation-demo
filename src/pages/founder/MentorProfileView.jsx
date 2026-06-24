@@ -41,6 +41,37 @@ export default function MentorProfileView() {
               <Badge key={t} status={t} />
             ))}
           </div>
+          {mentor.projectHighlights?.length > 0 && (
+            <>
+              <h3>Key Projects</h3>
+              <div className="ic-form-builder-questions">
+                {mentor.projectHighlights.map((project, index) => (
+                  <div key={`${project.title}-${index}`} className="ic-form-builder-question">
+                    <div>
+                      <strong>{project.title || 'Project'}</strong>
+                      <p className="text-muted sm">{project.domain || 'General domain'}</p>
+                    </div>
+                    <span className="text-muted sm">{project.outcome || 'Outcome not added'}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {mentor.previousStartupsByDomain?.length > 0 && (
+            <>
+              <h3>Previously Worked Startups (Domain Wise)</h3>
+              <div className="ic-form-builder-questions">
+                {mentor.previousStartupsByDomain.map((entry, index) => (
+                  <div key={`${entry.domain}-${index}`} className="ic-form-builder-question">
+                    <div>
+                      <strong>{entry.domain || 'General'}</strong>
+                      <p className="text-muted sm">{entry.startups || 'No startup names added'}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
           <h3>Availability</h3>
           <div className="slot-list">
             {mentor.availability.map((s) => (

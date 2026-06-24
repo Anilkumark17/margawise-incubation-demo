@@ -92,6 +92,7 @@ export function createSeedData() {
     currentUser: null,
     onboardingComplete: false,
     pendingBooking: null,
+    mentorStartupActions: [],
     startups: [
       {
         id: 'startup-1',
@@ -606,6 +607,14 @@ export function createSeedData() {
         upcomingSessions: 3,
         completedSessions: 44,
         earnings: 8800,
+        projectHighlights: [
+          { title: 'Stripe SMB onboarding redesign', domain: 'FinTech', outcome: 'Reduced onboarding drop-off by 31%' },
+          { title: 'SaaS pricing revamp', domain: 'SaaS', outcome: 'Improved paid conversion by 22%' },
+        ],
+        previousStartupsByDomain: [
+          { domain: 'FinTech', startups: 'LedgerPilot, PayFlow, NanoCredit' },
+          { domain: 'SaaS', startups: 'OpsBoard, SprintKit' },
+        ],
       },
       {
         id: 'mentor-2',
@@ -628,6 +637,14 @@ export function createSeedData() {
         upcomingSessions: 2,
         completedSessions: 30,
         earnings: 5250,
+        projectHighlights: [
+          { title: 'PLG funnel optimization', domain: 'SaaS', outcome: 'Doubled free-to-paid trial conversion' },
+          { title: 'Community-led launch playbook', domain: 'Marketing', outcome: 'Grew launch waitlist to 40k users' },
+        ],
+        previousStartupsByDomain: [
+          { domain: 'EdTech', startups: 'TutorNest, LearnPath' },
+          { domain: 'SaaS', startups: 'NoteFlow, TeamPulse' },
+        ],
       },
       {
         id: 'mentor-3',
@@ -650,6 +667,14 @@ export function createSeedData() {
         upcomingSessions: 1,
         completedSessions: 27,
         earnings: 6750,
+        projectHighlights: [
+          { title: 'Clinical AI assistant launch', domain: 'HealthTech', outcome: 'Shipped pilot in 12 weeks' },
+          { title: 'Enterprise ML governance rollout', domain: 'AI', outcome: 'Met compliance requirements for 4 regions' },
+        ],
+        previousStartupsByDomain: [
+          { domain: 'HealthTech', startups: 'CareStack AI, ClinicBridge' },
+          { domain: 'AI / SaaS', startups: 'PromptOps, DataPilot' },
+        ],
       },
       {
         id: 'mentor-4',
@@ -671,6 +696,14 @@ export function createSeedData() {
         upcomingSessions: 0,
         completedSessions: 19,
         earnings: 5700,
+        projectHighlights: [
+          { title: 'Series A fundraising prep', domain: 'Fundraising', outcome: 'Helped 6 startups close rounds' },
+          { title: 'Investor narrative workshop', domain: 'B2B Sales', outcome: 'Improved demo-day conversion' },
+        ],
+        previousStartupsByDomain: [
+          { domain: 'FinTech', startups: 'FinBridge, CapitalLoop' },
+          { domain: 'B2B SaaS', startups: 'PipelineOS, ScaleDeck' },
+        ],
       },
     ],
     sessionRequests: [

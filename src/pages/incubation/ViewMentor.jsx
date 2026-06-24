@@ -35,6 +35,37 @@ export default function ViewMentor() {
               <Badge key={t} status={t} />
             ))}
           </div>
+          {mentor.projectHighlights?.length > 0 && (
+            <div className="shortlist-field-block">
+              <label>Key Projects</label>
+              <div className="ic-form-builder-questions" style={{ marginTop: 8 }}>
+                {mentor.projectHighlights.map((project, index) => (
+                  <div key={`${project.title}-${index}`} className="ic-form-builder-question">
+                    <div>
+                      <strong>{project.title || 'Project'}</strong>
+                      <p className="text-muted sm">{project.domain || 'General domain'}</p>
+                    </div>
+                    <p className="text-muted sm">{project.outcome || 'Outcome not added'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {mentor.previousStartupsByDomain?.length > 0 && (
+            <div className="shortlist-field-block">
+              <label>Previously Worked Startups (Domain Wise)</label>
+              <div className="ic-form-builder-questions" style={{ marginTop: 8 }}>
+                {mentor.previousStartupsByDomain.map((entry, index) => (
+                  <div key={`${entry.domain}-${index}`} className="ic-form-builder-question">
+                    <div>
+                      <strong>{entry.domain || 'General'}</strong>
+                      <p className="text-muted sm">{entry.startups || 'No startup names added'}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </Card>
         <div className="profile-sidebar">
           <MetricCard label="Total Sessions" value={mentor.totalSessions} accent />

@@ -154,9 +154,11 @@ export default function MentorStartupReport() {
 
   const mentorBookings = (data.bookings || []).filter((b) => b.mentorId === mentor.id)
   const mentorRequests = (data.sessionRequests || []).filter((r) => r.mentorId === mentor.id)
+  const mentorActions = (data.mentorStartupActions || []).filter((action) => action.mentorId === mentor.id)
   const assignedStartupIds = [...new Set([
     ...mentorBookings.map((b) => b.startupId),
     ...mentorRequests.filter((r) => r.status !== 'rejected').map((r) => r.startupId),
+    ...mentorActions.map((action) => action.startupId),
   ])]
 
   const startup = data.startups.find((s) => s.id === id && assignedStartupIds.includes(s.id))

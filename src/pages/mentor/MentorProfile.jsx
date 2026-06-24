@@ -4,11 +4,16 @@ import { PageHeader, Card, Button, Input, Textarea } from '../../components/ui'
 import { useApp } from '../../context/AppProvider'
 import { EXPERTISE_TAGS } from '../../data/seed'
 
+const EMPTY_PROJECT = { title: '', domain: '', outcome: '' }
+const EMPTY_DOMAIN_ENTRY = { domain: '', startups: '' }
+
 export default function MentorProfile() {
   const { getCurrentMentor, updateMentor } = useApp()
   const mentor = getCurrentMentor()
   const [form, setForm] = useState(null)
   const [selectedTags, setSelectedTags] = useState([])
+  const [projects, setProjects] = useState([EMPTY_PROJECT])
+  const [workedStartups, setWorkedStartups] = useState([EMPTY_DOMAIN_ENTRY])
 
   useEffect(() => {
     if (mentor) {
@@ -22,6 +27,16 @@ export default function MentorProfile() {
         hourlyCharge: mentor.hourlyCharge,
       })
       setSelectedTags(mentor.expertise)
+      setProjects(
+        Array.isArray(mentor.projectHighlights) && mentor.projectHighlights.length
+          ? mentor.projectHighlights
+          : [EMPTY_PROJECT]
+      )
+      setWorkedStartups(
+        Array.isArray(mentor.previousStartupsByDomain) && mentor.previousStartupsByDomain.length
+          ? mentor.previousStartupsByDomain
+          : [EMPTY_DOMAIN_ENTRY]
+      )
     }
   }, [mentor])
 
@@ -36,8 +51,48 @@ export default function MentorProfile() {
     )
   }
 
+  const updateProject = (index, key, value) => {
+    setProjects((prev) => prev.map((item, idx) => (idx === index ? { ...item, [key]: value } : item)))
+  }
+
+  const addProject = () => setProjects((prev) => [...prev, { ...EMPTY_PROJECT }])
+  const removeProject = (index) =>
+    setProjects((prev) => (prev.length === 1 ? [EMPTY_PROJECT] : prev.filter((_, idx) => idx !== index)))
+
+  const updateWorkedStartup = (index, key, value) => {
+    setWorkedStartups((prev) =>
+      prev.map((item, idx) => (idx === index ? { ...item, [key]: value } : item))
+    )
+  }
+
+  const addWorkedStartup = () => setWorkedStartups((prev) => [...prev, { ...EMPTY_DOMAIN_ENTRY }])
+  const removeWorkedStartup = (index) =>
+    setWorkedStartups((prev) =>
+      prev.length === 1 ? [EMPTY_DOMAIN_ENTRY] : prev.filter((_, idx) => idx !== index)
+    )
+
   const handleSave = () => {
-    updateMentor(mentor.id, { ...form, expertise: selectedTags })
+    const cleanProjects = projects
+      .map((project) => ({
+        title: (project.title || '').trim(),
+        domain: (project.domain || '').trim(),
+        outcome: (project.outcome || '').trim(),
+      }))
+      .filter((project) => project.title || project.domain || project.outcome)
+
+    const cleanWorkedStartups = workedStartups
+      .map((entry) => ({
+        domain: (entry.domain || '').trim(),
+        startups: (entry.startups || '').trim(),
+      }))
+      .filter((entry) => entry.domain || entry.startups)
+
+    updateMentor(mentor.id, {
+      ...form,
+      expertise: selectedTags,
+      projectHighlights: cleanProjects,
+      previousStartupsByDomain: cleanWorkedStartups,
+    })
   }
 
   return (
@@ -65,6 +120,73 @@ export default function MentorProfile() {
               >
                 {tag}
               </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="form-field">
+          <div className="section-header" style={{ marginBottom: 10 }}>
+            <h3>Key Projects</h3>
+            <Button size="sm" variant="secondary" onClick={addProject}>+ Add Project</Button>
+          </div>
+          <div className="ic-form-builder-questions">
+            {projects.map((project, index) => (
+              <div key={`project-${index}`} className="ic-form-q-card">
+                <Input
+                  label="Project Title"
+                  value={project.title}
+                  onChange={(e) => updateProject(index, 'title', e.target.value)}
+                />
+                <Input
+                  label="Domain"
+                  value={project.domain}
+                  onChange={(e) => updateProject(index, 'domain', e.target.value)}
+                />
+                <Textarea
+                  label="Outcome / Impact"
+                  value={project.outcome}
+                  onChange={(e) => updateProject(index, 'outcome', e.target.value)}
+                />
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => removeProject(index)}
+                  disabled={projects.length === 1}
+                >
+                  Remove Project
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="form-field">
+          <div className="section-header" style={{ marginBottom: 10 }}>
+            <h3>Previously Worked Startups (Domain Wise)</h3>
+            <Button size="sm" variant="secondary" onClick={addWorkedStartup}>+ Add Domain</Button>
+          </div>
+          <div className="ic-form-builder-questions">
+            {workedStartups.map((entry, index) => (
+              <div key={`worked-startups-${index}`} className="ic-form-q-card">
+                <Input
+                  label="Domain"
+                  value={entry.domain}
+                  onChange={(e) => updateWorkedStartup(index, 'domain', e.target.value)}
+                />
+                <Textarea
+                  label="Startups Worked With (comma-separated)"
+                  value={entry.startups}
+                  onChange={(e) => updateWorkedStartup(index, 'startups', e.target.value)}
+                />
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => removeWorkedStartup(index)}
+                  disabled={workedStartups.length === 1}
+                >
+                  Remove Domain
+                </Button>
+              </div>
             ))}
           </div>
         </div>
