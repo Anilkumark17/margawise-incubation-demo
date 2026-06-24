@@ -147,6 +147,7 @@ export default function StartupMatches() {
   const [dragStartX, setDragStartX] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
   const [exitDirection, setExitDirection] = useState(null)
+  const [cardExpanded, setCardExpanded] = useState(false)
 
   const mentorActions = useMemo(
     () => (data.mentorStartupActions || []).filter((a) => a.mentorId === mentor?.id),
@@ -221,7 +222,7 @@ export default function StartupMatches() {
   const hasAvailability = (mentor?.availability || []).length > 0
 
   useEffect(() => {
-    setDragX(0); setDragStartX(null); setIsDragging(false); setExitDirection(null)
+    setDragX(0); setDragStartX(null); setIsDragging(false); setExitDirection(null); setCardExpanded(false)
   }, [current?.startup.id])
 
   const decideCurrent = useCallback(
@@ -405,16 +406,22 @@ export default function StartupMatches() {
                             <h2 className="ms-card-name">{item.startup.name}</h2>
                             <p className="text-muted sm">{item.startup.founderName} · {item.startup.stage}</p>
                           </div>
-                          <span className="ms-fit-badge">{item.fit.score}%</span>
+                          <span className="ms-fit-badge">{item.fit.score}% fit</span>
                         </div>
 
-                        {/* Industry */}
-                        <div className="ms-card-row">
-                          <span className="ms-card-row-label">Industry</span>
-                          <span>{item.startup.industry || '—'}</span>
+                        {/* Industry + Stage row */}
+                        <div className="ms-card-two-col">
+                          <div className="ms-card-row">
+                            <span className="ms-card-row-label">Industry</span>
+                            <span>{item.startup.industry || '—'}</span>
+                          </div>
+                          <div className="ms-card-row">
+                            <span className="ms-card-row-label">Stage</span>
+                            <Badge status={item.startup.stage} />
+                          </div>
                         </div>
 
-                        {/* Problem */}
+                        {/* Problem statement — always visible */}
                         <div className="ms-card-block">
                           <span className="ms-card-row-label">Problem Statement</span>
                           <p className="ms-card-desc">{item.startup.description || 'No description available.'}</p>
@@ -429,11 +436,57 @@ export default function StartupMatches() {
                           </div>
                         )}
 
-                        {/* Cohort */}
-                        {item.startup.cohort && (
-                          <div className="ms-card-row">
-                            <span className="ms-card-row-label">Cohort</span>
-                            <span>{item.startup.cohort}</span>
+                        {/* View Application toggle — only on top card */}
+                        {isTop && (
+                          <button
+                            type="button"
+                            className="ms-card-app-toggle"
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onClick={(e) => { e.stopPropagation(); setCardExpanded((v) => !v) }}
+                          >
+                            {cardExpanded ? '▲ Hide Application' : '▼ View Full Application'}
+                          </button>
+                        )}
+
+                        {/* Expanded application details */}
+                        {isTop && cardExpanded && (
+                          <div className="ms-card-app-body">
+                            <div className="ms-card-app-grid">
+                              <div className="ms-card-app-field">
+                                <span className="ms-card-row-label">Cohort</span>
+                                <span>{item.startup.cohort || '—'}</span>
+                              </div>
+                              <div className="ms-card-app-field">
+                                <span className="ms-card-row-label">Mentor Sessions</span>
+                                <span>{item.startup.mentorSessions ?? 0}</span>
+                              </div>
+                              <div className="ms-card-app-field">
+                                <span className="ms-card-row-label">Founded</span>
+                                <span>{item.startup.founded || '—'}</span>
+                              </div>
+                              <div className="ms-card-app-field">
+                                <span className="ms-card-row-label">Team Size</span>
+                                <span>{item.startup.teamSize || '—'}</span>
+                              </div>
+                            </div>
+                            {item.startup.solution && (
+                              <div className="ms-card-app-section">
+                                <span className="ms-card-row-label">Solution</span>
+                                <p className="ms-card-desc">{item.startup.solution}</p>
+                              </div>
+                            )}
+                            {item.startup.targetMarket && (
+                              <div className="ms-card-app-section">
+                                <span className="ms-card-row-label">Target Market</span>
+                                <p className="ms-card-desc">{item.startup.targetMarket}</p>
+                              </div>
+                            )}
+                            {item.startup.traction && (
+                              <div className="ms-card-app-section">
+                                <span className="ms-card-row-label">Traction</span>
+                                <p className="ms-card-desc">{item.startup.traction}</p>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

@@ -3059,7 +3059,32 @@ body {
   align-items: start;
 }
 .ms-deck-col { display: flex; flex-direction: column; gap: 0; }
-.ms-panel-col { display: flex; flex-direction: column; gap: 16px; }
+.ms-panel-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--accent) 55%, #64748b) rgba(255, 255, 255, 0.04);
+  scroll-behavior: smooth;
+}
+.ms-panel-col::-webkit-scrollbar { width: 6px; }
+.ms-panel-col::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+  margin: 4px 0;
+}
+.ms-panel-col::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 70%, #fff) 0%, color-mix(in oklab, var(--accent) 45%, #64748b) 100%);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.ms-panel-col::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
 .ms-deck-card { padding: 20px 20px 16px; }
 .ms-toolbar {
   display: grid;
@@ -3117,8 +3142,30 @@ body {
   user-select: none; touch-action: pan-y; overflow: hidden;
   will-change: transform;
 }
-.ms-card-top { z-index: 3; cursor: grab; }
+.ms-card-top {
+  z-index: 3;
+  cursor: grab;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--accent) 55%, #64748b) rgba(255, 255, 255, 0.04);
+  scroll-behavior: smooth;
+}
 .ms-card-top:active { cursor: grabbing; }
+.ms-card-top::-webkit-scrollbar { width: 6px; }
+.ms-card-top::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+  margin: 10px 2px;
+}
+.ms-card-top::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 70%, #fff) 0%, color-mix(in oklab, var(--accent) 45%, #64748b) 100%);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.ms-card-top::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
 .ms-card-back-1 {
   z-index: 2;
   transform: translateY(10px) scale(0.975);
@@ -3163,6 +3210,56 @@ body {
 }
 .ms-card-desc { margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 .ms-card-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.ms-card-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ms-card-app-toggle {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px dashed color-mix(in oklab, var(--accent) 40%, var(--border));
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+  margin-top: auto;
+}
+.ms-card-app-toggle:hover {
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+}
+.ms-card-app-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+.ms-card-app-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ms-card-app-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+.ms-card-app-field span { font-size: 13px; }
+.ms-card-app-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
 .mentor-match-pill {
   font-size: 11px; color: var(--text-secondary);
   border: 1px solid color-mix(in oklab, var(--accent) 18%, var(--border));
@@ -3213,6 +3310,24 @@ body {
   padding: 12px 14px 14px;
   border-top: 1px solid color-mix(in oklab, var(--accent) 10%, var(--border));
   display: flex; flex-direction: column; gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--accent) 55%, #64748b) rgba(255, 255, 255, 0.04);
+}
+.ms-icard-body::-webkit-scrollbar { width: 5px; }
+.ms-icard-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+  margin: 4px 0;
+}
+.ms-icard-body::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--accent) 50%, #64748b);
+  border-radius: 999px;
+}
+.ms-icard-body::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 .ms-icard-field { display: flex; flex-direction: column; gap: 4px; }
 .ms-icard-field p { margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
