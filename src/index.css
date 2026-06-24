@@ -3098,14 +3098,9 @@ body {
 }
 .ms-empty-icon { font-size: 40px; line-height: 1; margin-bottom: 4px; }
 .ms-stack-wrap { display: flex; flex-direction: column; gap: 16px; }
-/* Outer glow tray — purely decorative */
 .ms-stack-tray {
   position: relative;
-  padding: 28px 8px 8px;
-  border-radius: 24px;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(253, 176, 34, 0.08) 0%, transparent 60%),
-    rgba(8, 14, 26, 0.50);
+  padding: 24px 0 0;
 }
 .ms-stack {
   position: relative;
@@ -3113,17 +3108,10 @@ body {
 }
 .ms-card {
   position: absolute; inset: 0;
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  background:
-    radial-gradient(ellipse at 85% 8%, rgba(253, 176, 34, 0.13) 0%, transparent 50%),
-    rgba(14, 22, 38, 0.72);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.40),
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.30) inset;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   padding: 22px 22px 18px;
   display: flex; flex-direction: column; gap: 14px;
   user-select: none; touch-action: pan-y; overflow: hidden;
@@ -3133,17 +3121,13 @@ body {
 .ms-card-top:active { cursor: grabbing; }
 .ms-card-back-1 {
   z-index: 2;
-  transform: translateY(12px) scale(0.972);
-  opacity: 0.55;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  transform: translateY(10px) scale(0.975);
+  opacity: 0.6;
 }
 .ms-card-back-2 {
   z-index: 1;
-  transform: translateY(24px) scale(0.944);
-  opacity: 0.30;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  transform: translateY(20px) scale(0.950);
+  opacity: 0.35;
 }
 .ms-stamp {
   position: absolute; top: 16px;
@@ -3163,19 +3147,18 @@ body {
 }
 .ms-card-row {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  padding: 9px 12px; border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(4px);
+  padding: 9px 12px; border-radius: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
 }
 .ms-card-row-label {
   font-size: 11px; font-weight: 600; text-transform: uppercase;
   letter-spacing: 0.06em; color: var(--text-muted);
 }
 .ms-card-block {
-  padding: 11px 12px; border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 11px 12px; border-radius: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   display: flex; flex-direction: column; gap: 7px;
 }
 .ms-card-desc { margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
