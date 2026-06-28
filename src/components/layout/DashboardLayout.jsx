@@ -7,12 +7,13 @@ const SIDEBAR_KEY = 'margawise_sidebar_collapsed'
 const NAV = {
   founder: [
     { to: '/founder/dashboard', label: 'Dashboard', icon: '◫' },
+    { to: '/founder/targets', label: 'Targets', icon: '◈' },
+    { to: '/founder/reviews', label: 'Reviews', icon: '▣' },
     { to: '/founder/mentors', label: 'Mentors', icon: '◎' },
   ],
   mentor: [
     { to: '/mentor/dashboard', label: 'Dashboard', icon: '◫' },
     { to: '/mentor/matches', label: 'Matches', icon: '⇄' },
-    { to: '/mentor/requests', label: 'Requests', icon: '✉' },
     { to: '/mentor/profile', label: 'Profile', icon: '◉' },
     { to: '/mentor/availability', label: 'Availability', icon: '◷' },
   ],

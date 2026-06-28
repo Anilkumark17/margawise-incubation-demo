@@ -607,6 +607,7 @@ export function createSeedData() {
         upcomingSessions: 3,
         completedSessions: 44,
         earnings: 8800,
+        isInternal: true,
         projectHighlights: [
           { title: 'Stripe SMB onboarding redesign', domain: 'FinTech', outcome: 'Reduced onboarding drop-off by 31%' },
           { title: 'SaaS pricing revamp', domain: 'SaaS', outcome: 'Improved paid conversion by 22%' },
@@ -637,6 +638,7 @@ export function createSeedData() {
         upcomingSessions: 2,
         completedSessions: 30,
         earnings: 5250,
+        isInternal: true,
         projectHighlights: [
           { title: 'PLG funnel optimization', domain: 'SaaS', outcome: 'Doubled free-to-paid trial conversion' },
           { title: 'Community-led launch playbook', domain: 'Marketing', outcome: 'Grew launch waitlist to 40k users' },
@@ -649,6 +651,7 @@ export function createSeedData() {
       {
         id: 'mentor-3',
         name: 'Elena Vasquez',
+        email: 'elena.vasquez@aimentor.io',
         designation: 'AI Research Lead',
         yearsExperience: 12,
         industryExpertise: 'AI/ML, Enterprise',
@@ -667,6 +670,7 @@ export function createSeedData() {
         upcomingSessions: 1,
         completedSessions: 27,
         earnings: 6750,
+        isInternal: false,
         projectHighlights: [
           { title: 'Clinical AI assistant launch', domain: 'HealthTech', outcome: 'Shipped pilot in 12 weeks' },
           { title: 'Enterprise ML governance rollout', domain: 'AI', outcome: 'Met compliance requirements for 4 regions' },
@@ -675,10 +679,15 @@ export function createSeedData() {
           { domain: 'HealthTech', startups: 'CareStack AI, ClinicBridge' },
           { domain: 'AI / SaaS', startups: 'PromptOps, DataPilot' },
         ],
+        workExperience: [
+          { company: 'Google', role: 'ML Product Lead', duration: '2016 – 2020', summary: 'Shipped enterprise ML products for healthcare clients.' },
+          { company: 'OpenAI', role: 'Research Product Manager', duration: '2020 – 2024', summary: 'Led responsible AI integration for partner startups.' },
+        ],
       },
       {
         id: 'mentor-4',
         name: 'Robert Kim',
+        email: 'robert.kim@sequoia.com',
         designation: 'Partner, Sequoia Scout',
         yearsExperience: 20,
         industryExpertise: 'Venture Capital',
@@ -696,6 +705,7 @@ export function createSeedData() {
         upcomingSessions: 0,
         completedSessions: 19,
         earnings: 5700,
+        isInternal: false,
         projectHighlights: [
           { title: 'Series A fundraising prep', domain: 'Fundraising', outcome: 'Helped 6 startups close rounds' },
           { title: 'Investor narrative workshop', domain: 'B2B Sales', outcome: 'Improved demo-day conversion' },
@@ -703,6 +713,10 @@ export function createSeedData() {
         previousStartupsByDomain: [
           { domain: 'FinTech', startups: 'FinBridge, CapitalLoop' },
           { domain: 'B2B SaaS', startups: 'PipelineOS, ScaleDeck' },
+        ],
+        workExperience: [
+          { company: 'Sequoia Capital', role: 'Scout Partner', duration: '2018 – Present', summary: 'Seed investments and founder coaching across B2B SaaS.' },
+          { company: 'Goldman Sachs', role: 'VP, Technology Investment Banking', duration: '2010 – 2018', summary: 'Advised growth-stage fintech exits and Series A–C rounds.' },
         ],
       },
     ],

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { loadData, saveData, resetData } from '../lib/storage'
 import { createSeedData, USERS, DEFAULT_BOOKINGS } from '../data/seed'
 import { DEFAULT_ASSUMPTIONS, DEFAULT_INTERVIEW_SESSIONS, INTERVIEW_FRAMEWORKS } from '../data/assumptionsSeed'
+import { buildDefaultMilestones, ensureReportMilestones } from '../data/reportMilestones'
 
 const AppContext = createContext(null)
 
@@ -71,10 +72,16 @@ export function AppProvider({ children }) {
             gtm: { leads: 0, meetings: 0, customers: 0, revenue: 0, activities: [] },
           }
         }
+        if (!next.reportMilestones?.length) {
+          next = { ...next, reportMilestones: buildDefaultMilestones(next.id) }
+        }
         return next
       }),
       mentors: (d.mentors || []).map((mentor) => ({
         ...mentor,
+        isInternal: typeof mentor.isInternal === 'boolean'
+          ? mentor.isInternal
+          : ['mentor-1', 'mentor-2'].includes(mentor.id),
         projectHighlights: Array.isArray(mentor.projectHighlights) ? mentor.projectHighlights : [],
         previousStartupsByDomain: Array.isArray(mentor.previousStartupsByDomain)
           ? mentor.previousStartupsByDomain
@@ -542,6 +549,57 @@ export function AppProvider({ children }) {
     }))
   }
 
+  const updateReportMilestones = (startupId, updater) => {
+    update((d) => ({
+      ...d,
+      startups: d.startups.map((s) => {
+        if (s.id !== startupId) return s
+        const current = ensureReportMilestones(s)
+        const next = typeof updater === 'function' ? updater(current) : updater
+        return { ...s, reportMilestones: next }
+      }),
+    }))
+  }
+
+  const submitDeliverableLink = (startupId, milestoneId, deliverableId, link) => {
+    const today = new Date().toISOString().split('T')[0]
+    updateReportMilestones(startupId, (milestones) =>
+      milestones.map((milestone) =>
+        milestone.id !== milestoneId
+          ? milestone
+          : {
+              ...milestone,
+              deliverables: milestone.deliverables.map((item) =>
+                item.id !== deliverableId
+                  ? item
+                  : {
+                      ...item,
+                      link,
+                      submittedAt: today,
+                      evidenceUploaded: !!link.trim(),
+                      progressStatus: item.progressStatus === 'Complete' ? 'Complete' : 'In Progress',
+                    }
+              ),
+            }
+      )
+    )
+  }
+
+  const updateDeliverableDeadline = (startupId, milestoneId, deliverableId, deadline) => {
+    updateReportMilestones(startupId, (milestones) =>
+      milestones.map((milestone) =>
+        milestone.id !== milestoneId
+          ? milestone
+          : {
+              ...milestone,
+              deliverables: milestone.deliverables.map((item) =>
+                item.id !== deliverableId ? item : { ...item, deadline }
+              ),
+            }
+      )
+    )
+  }
+
   const resetApp = () => setData(resetData(createSeedData()))
 
   return (
@@ -580,6 +638,9 @@ export function AppProvider({ children }) {
         updateMentorStatus,
         setMentorStartupInterest,
         clearMentorStartupInterest,
+        updateReportMilestones,
+        submitDeliverableLink,
+        updateDeliverableDeadline,
         resetApp,
       }}
     >
