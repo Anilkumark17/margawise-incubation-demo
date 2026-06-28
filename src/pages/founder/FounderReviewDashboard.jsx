@@ -93,7 +93,7 @@ export default function FounderReviewDashboard() {
               <p className="text-muted sm">
                 Submit deliverables in Target Manager to receive mentor and manager feedback.
               </p>
-              <Link to="/founder/targets" className="fr-empty-link">Go to Target Manager →</Link>
+              <Link to="/founder/dashboard" className="fr-empty-link">Go to Dashboard →</Link>
             </div>
           </Card>
         ) : (

@@ -68,11 +68,11 @@ const DEFAULT_FORM_SECTIONS = [
     ],
   },
 ]
-const DEFAULT_RUBRIC = [
-  { id: 'team', label: 'Team quality', weight: 30, margawiseWeight: 30 },
-  { id: 'market', label: 'Market opportunity', weight: 25, margawiseWeight: 25 },
-  { id: 'traction', label: 'Traction & validation', weight: 25, margawiseWeight: 25 },
-  { id: 'coachability', label: 'Coachability', weight: 20, margawiseWeight: 20 },
+const MARGAWISE_RUBRIC = [
+  { id: 'team', label: 'Team quality', weight: 30 },
+  { id: 'market', label: 'Market opportunity', weight: 25 },
+  { id: 'traction', label: 'Traction & validation', weight: 25 },
+  { id: 'coachability', label: 'Coachability', weight: 20 },
 ]
 
 function scoreMatches(score, band) {
@@ -97,10 +97,15 @@ export default function ApplicationsHub() {
   const [stageFilter, setStageFilter] = useState('All')
   const [sectorFilter, setSectorFilter] = useState('All')
   const [scoreFilter, setScoreFilter] = useState('All')
-  const [rankMode, setRankMode] = useState('margawise')
+  const [rankMode, setRankMode] = useState('rubric')
   const [managerRanks, setManagerRanks] = useState({})
   const [formSections, setFormSections] = useState(DEFAULT_FORM_SECTIONS)
-  const [rubric, setRubric] = useState(DEFAULT_RUBRIC)
+  const [rubricMode, setRubricMode] = useState('margawise')
+  const [customRubric, setCustomRubric] = useState([
+    { id: 'custom-1', label: 'Program fit', weight: 40 },
+    { id: 'custom-2', label: 'Innovation depth', weight: 35 },
+    { id: 'custom-3', label: 'Execution readiness', weight: 25 },
+  ])
   const [callConfig, setCallConfig] = useState({
     roundName: 'Margawise Incubation Round 2026',
     openDate: '2026-07-01',
@@ -126,9 +131,13 @@ export default function ApplicationsHub() {
     return Math.round(app.fitScore * 0.4 + validation * 0.4 + traction * 0.2)
   }
 
+  const activeRubric = rubricMode === 'margawise' ? MARGAWISE_RUBRIC : customRubric
+  const activeRubricLabel =
+    rubricMode === 'margawise' ? 'Margawise Rubric' : 'IIIT H Rubric'
+
   const getRubricScore = (app) => {
-    const totalWeight = rubric.reduce((sum, c) => sum + Number(c.weight || 0), 0) || 1
-    const points = rubric.reduce((sum, c) => {
+    const totalWeight = activeRubric.reduce((sum, c) => sum + Number(c.weight || 0), 0) || 1
+    const points = activeRubric.reduce((sum, c) => {
       const criterionRaw = app.scorecard?.[c.id]
       const criterionScore = typeof criterionRaw === 'number' ? criterionRaw : Math.round(app.fitScore / 10)
       return sum + ((criterionScore / 10) * Number(c.weight || 0))
@@ -144,30 +153,29 @@ export default function ApplicationsHub() {
           const ar = Number(managerRanks[a.item.id] || 9999)
           const br = Number(managerRanks[b.item.id] || 9999)
           if (ar !== br) return ar - br
-          return getMargawiseScore(b.item) - getMargawiseScore(a.item)
+          return getRubricScore(b.item) - getRubricScore(a.item)
         }
-        if (rankMode === 'rubric') {
-          const diff = getRubricScore(b.item) - getRubricScore(a.item)
-          if (diff !== 0) return diff
-          return getMargawiseScore(b.item) - getMargawiseScore(a.item)
-        }
-        const diff = getMargawiseScore(b.item) - getMargawiseScore(a.item)
+        const diff = getRubricScore(b.item) - getRubricScore(a.item)
         if (diff !== 0) return diff
-        return getRubricScore(b.item) - getRubricScore(a.item)
+        return getMargawiseScore(b.item) - getMargawiseScore(a.item)
       })
       .map((entry) => entry.item)
   }
 
-  const shouldAutoReject = (app) =>
-    getMargawiseScore(app) < Number(autoRejectMargawiseLt || 0) ||
-    getRubricScore(app) < Number(autoRejectRubricLt || 0)
+  const shouldAutoReject = (app) => {
+    const rubricFail = getRubricScore(app) < Number(autoRejectRubricLt || 0)
+    if (rubricMode === 'custom') return rubricFail
+    return (
+      getMargawiseScore(app) < Number(autoRejectMargawiseLt || 0) || rubricFail
+    )
+  }
 
   const filtered = useMemo(() => {
     const list = applications.filter(
       (a) =>
         (stageFilter === 'All' || a.stage === stageFilter) &&
         (sectorFilter === 'All' || a.sector === sectorFilter) &&
-        scoreMatches(getMargawiseScore(a), scoreFilter)
+        scoreMatches(getRubricScore(a), scoreFilter)
     )
     const scored = sortApplications(list)
     if (showOnlyAutoReject) return scored.filter(shouldAutoReject)
@@ -179,15 +187,16 @@ export default function ApplicationsHub() {
     scoreFilter,
     rankMode,
     managerRanks,
-    rubric,
+    rubricMode,
+    customRubric,
     showOnlyAutoReject,
     autoRejectMargawiseLt,
     autoRejectRubricLt,
   ])
 
   const selected = applications.find((a) => a.id === selectedId) || null
-  const totalRubricWeight = rubric.reduce((sum, c) => sum + Number(c.weight || 0), 0)
-  const totalMargawiseWeight = rubric.reduce((sum, c) => sum + Number(c.margawiseWeight || 0), 0)
+  const totalRubricWeight = activeRubric.reduce((sum, c) => sum + Number(c.weight || 0), 0)
+  const totalMargawiseWeight = MARGAWISE_RUBRIC.reduce((sum, c) => sum + Number(c.weight || 0), 0)
   const today = '2026-07-10'
   const submissionsOpenNow =
     callConfig.submissionsEnabled &&
@@ -489,17 +498,19 @@ export default function ApplicationsHub() {
     setNewQuestionBySection((prev) => ({ ...prev, [sectionId]: '' }))
   }
 
-  const updateRubric = (id, key, value) => {
-    setRubric((prev) => prev.map((r) => (r.id === id ? { ...r, [key]: key === 'label' ? value : Number(value || 0) } : r)))
+  const updateCustomRubric = (id, key, value) => {
+    setCustomRubric((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, [key]: key === 'label' ? value : Number(value || 0) } : r))
+    )
   }
   const addRubricCriteria = () => {
-    setRubric((prev) => [
+    setCustomRubric((prev) => [
       ...prev,
-      { id: `custom-${Date.now()}`, label: `Custom Criteria ${prev.length + 1}`, weight: 10, margawiseWeight: 0 },
+      { id: `custom-${Date.now()}`, label: `Custom criteria ${prev.length + 1}`, weight: 10 },
     ])
   }
   const removeRubricCriteria = (id) => {
-    setRubric((prev) => prev.filter((r) => r.id !== id))
+    setCustomRubric((prev) => prev.filter((r) => r.id !== id))
   }
 
   const uploadRequirements = formSections.flatMap((s) =>
@@ -674,74 +685,164 @@ export default function ApplicationsHub() {
         )}
 
         {activeTab === 'rubric' && (
-          <Card className="section-card">
-            <div className="section-header">
-              <div>
-                <h3>Evaluation Rubric Configuration</h3>
-                <p className="text-muted sm">Margawise weights are shown as reference. Program-specific weights are editable.</p>
+          <div className="ic-rubric-page">
+            <Card className="section-card ic-rubric-step">
+              <div className="ic-rubric-step-head">
+                <span className="ic-rubric-step-num">1</span>
+                <div>
+                  <h3>Choose your evaluation rubric</h3>
+                  <p className="text-muted sm">
+                    Pick the Margawise standard rubric or build a program-specific rubric for this cohort.
+                  </p>
+                </div>
               </div>
-              <Button variant="secondary" onClick={addRubricCriteria}>+ Add Criteria</Button>
-            </div>
-            <div className="table-wrap">
-            <table className="data-table shortlist-table">
-              <thead>
-                <tr>
-                  <th>Criteria</th>
-                  <th>Margawise Weight</th>
-                  <th>Program Weight</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rubric.map((criterion) => (
-                  <tr key={criterion.id}>
-                    <td>
-                      <input
-                        className="form-input"
-                        value={criterion.label}
-                        onChange={(e) => updateRubric(criterion.id, 'label', e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="form-input"
-                        type="number"
-                        min="0"
-                        value={criterion.margawiseWeight}
-                        onChange={(e) => updateRubric(criterion.id, 'margawiseWeight', e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="form-input"
-                        type="number"
-                        min="0"
-                        value={criterion.weight}
-                        onChange={(e) => updateRubric(criterion.id, 'weight', e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <Button size="sm" variant="danger" onClick={() => removeRubricCriteria(criterion.id)}>Remove</Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-            <div className="ic-score-summary-row">
-            <div className="ic-score-summary-card">
-              <span>Margawise Total Weight</span>
-              <strong>{totalMargawiseWeight}</strong>
-            </div>
-            <div className="ic-score-summary-card">
-              <span>Program Total Weight</span>
-              <strong>{totalRubricWeight}</strong>
-            </div>
-          </div>
-            {totalRubricWeight !== 100 && (
-              <p className="text-muted sm">Tip: keep Program Total Weight at 100 for clean normalized scoring.</p>
+
+              <div className="ic-rubric-mode-grid">
+                <button
+                  type="button"
+                  className={`ic-rubric-mode-card${rubricMode === 'margawise' ? ' active' : ''}`}
+                  onClick={() => setRubricMode('margawise')}
+                >
+                  <span className="ic-rubric-mode-badge">Recommended</span>
+                  <h4>Margawise Rubric</h4>
+                  <p>Use the fixed Margawise framework. Criteria and weights are locked and cannot be edited.</p>
+                  <span className="ic-rubric-mode-meta">{MARGAWISE_RUBRIC.length} criteria · {totalMargawiseWeight}% total</span>
+                </button>
+                <button
+                  type="button"
+                  className={`ic-rubric-mode-card${rubricMode === 'custom' ? ' active' : ''}`}
+                  onClick={() => setRubricMode('custom')}
+                >
+                  <h4>Custom Program Rubric</h4>
+                  <p>Define your own criteria and weights for this incubation program.</p>
+                  <span className="ic-rubric-mode-meta">{customRubric.length} criteria · {totalRubricWeight}% total</span>
+                </button>
+              </div>
+            </Card>
+
+            {rubricMode === 'margawise' ? (
+              <Card className="section-card ic-rubric-panel">
+                <div className="section-header ic-rubric-panel-head">
+                  <div>
+                    <h3>Margawise Rubric</h3>
+                    <p className="text-muted sm">Fixed evaluation weights used for scoring in Review & Selection.</p>
+                  </div>
+                  <span className="ic-rubric-lock-badge">Fixed · Read only</span>
+                </div>
+
+                <div className="ic-rubric-table">
+                  <div className="ic-rubric-table-row ic-rubric-table-head ic-rubric-cols-2">
+                    <span className="ic-rubric-col-criteria">Criteria</span>
+                    <span className="ic-rubric-col-weight">Weight</span>
+                  </div>
+                  {MARGAWISE_RUBRIC.map((criterion) => (
+                    <div key={criterion.id} className="ic-rubric-table-row ic-rubric-cols-2">
+                      <span className="ic-rubric-col-criteria">{criterion.label}</span>
+                      <span className="ic-rubric-col-weight">{criterion.weight}%</span>
+                    </div>
+                  ))}
+                  <div className="ic-rubric-table-row ic-rubric-table-foot ic-rubric-cols-2">
+                    <span className="ic-rubric-col-criteria">Total</span>
+                    <span className={`ic-rubric-col-weight ic-rubric-total ${totalMargawiseWeight === 100 ? 'ic-weight-ok' : 'ic-weight-warn'}`}>
+                      {totalMargawiseWeight}%
+                    </span>
+                  </div>
+                </div>
+
+                <p className="ic-rubric-footnote text-muted sm">
+                  Active for scoring in Review & Selection. Margawise rubric weights are fixed.
+                </p>
+              </Card>
+            ) : (
+              <Card className="section-card ic-rubric-panel">
+                <div className="section-header ic-rubric-panel-head">
+                  <div>
+                    <h3>Custom Program Rubric</h3>
+                    <p className="text-muted sm">Define criteria and weights for this cohort. Total must equal 100%.</p>
+                  </div>
+                  <span className="ic-rubric-edit-badge">Editable</span>
+                </div>
+
+                {customRubric.length === 0 ? (
+                  <div className="ic-rubric-empty">
+                    <p className="ic-rubric-empty-title">Build your program rubric</p>
+                    <p className="text-muted sm">Add criteria and assign weights that reflect your selection priorities.</p>
+                    <Button size="sm" onClick={addRubricCriteria}>+ Add first criterion</Button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="ic-rubric-table ic-rubric-table-custom">
+                      <div className="ic-rubric-table-row ic-rubric-table-head ic-rubric-cols-custom">
+                        <span className="ic-rubric-col-criteria">Criteria</span>
+                        <span className="ic-rubric-col-weight">Weight</span>
+                        <span className="ic-rubric-col-remove" aria-hidden="true" />
+                      </div>
+
+                      {customRubric.map((criterion, index) => (
+                        <div key={criterion.id} className="ic-rubric-table-row ic-rubric-cols-custom ic-rubric-edit-row">
+                          <div className="ic-rubric-col-criteria">
+                            <input
+                              className="form-input ic-rubric-name-input"
+                              value={criterion.label}
+                              onChange={(e) => updateCustomRubric(criterion.id, 'label', e.target.value)}
+                              placeholder={`Criterion ${index + 1}`}
+                              aria-label={`Criterion ${index + 1} name`}
+                            />
+                          </div>
+                          <div className="ic-rubric-col-weight">
+                            <div className="ic-rubric-weight-wrap">
+                              <input
+                                className="form-input ic-rubric-weight-input"
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={criterion.weight}
+                                onChange={(e) => updateCustomRubric(criterion.id, 'weight', e.target.value)}
+                                aria-label={`Weight for ${criterion.label || `criterion ${index + 1}`}`}
+                              />
+                              <span className="ic-rubric-weight-suffix">%</span>
+                            </div>
+                          </div>
+                          <div className="ic-rubric-col-remove">
+                            <button
+                              type="button"
+                              className="ic-rubric-remove-btn"
+                              onClick={() => removeRubricCriteria(criterion.id)}
+                              disabled={customRubric.length <= 1}
+                              title="Remove criterion"
+                              aria-label={`Remove ${criterion.label || `criterion ${index + 1}`}`}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="ic-rubric-table-row ic-rubric-table-foot ic-rubric-cols-custom">
+                        <span className="ic-rubric-col-criteria">Total</span>
+                        <span className={`ic-rubric-col-weight ic-rubric-total ${totalRubricWeight === 100 ? 'ic-weight-ok' : 'ic-weight-warn'}`}>
+                          {totalRubricWeight}%
+                        </span>
+                        <span className="ic-rubric-col-remove" />
+                      </div>
+
+                      <button type="button" className="ic-rubric-add-row" onClick={addRubricCriteria}>
+                        + Add criteria
+                      </button>
+                    </div>
+
+                    <div className="ic-rubric-custom-bar">
+                      <p className={`ic-rubric-status ${totalRubricWeight === 100 ? 'ic-rubric-status-ok' : 'ic-rubric-status-warn'}`}>
+                        {totalRubricWeight === 100
+                          ? 'Weights total 100% — ready for scoring in Review & Selection.'
+                          : `Current total is ${totalRubricWeight}%. Adjust weights to reach 100%.`}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </Card>
             )}
-          </Card>
+          </div>
         )}
 
         {activeTab === 'review' && (
@@ -750,9 +851,23 @@ export default function ApplicationsHub() {
             <div className="section-header">
               <div>
                 <h3>Application Review & Selection</h3>
-                <p className="text-muted sm">Compare Margawise score and rubric score, then shortlist/accept/reject.</p>
+                <p className="text-muted sm">
+                  Scoring uses {activeRubricLabel} only — change rubric type in Evaluation Rubric.
+                </p>
               </div>
               <Badge status={`${filtered.length} visible applications`} />
+            </div>
+            <div className="ic-rubric-review-banner">
+              <div>
+                <span className="ic-rubric-review-label">Active evaluation rubric</span>
+                <strong>{activeRubricLabel}</strong>
+                <span>
+                  Sorted by total rubric score
+                </span>
+              </div>
+              <Button size="sm" variant="secondary" onClick={() => setActiveTab('rubric')}>
+                Change rubric
+              </Button>
             </div>
             <div className="shortlist-filters">
               <Select label="Sector" value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)}>
@@ -761,30 +876,31 @@ export default function ApplicationsHub() {
               <Select label="Status" value={stageFilter} onChange={(e) => setStageFilter(e.target.value)}>
                 {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
               </Select>
-              <Select label="Margawise Score" value={scoreFilter} onChange={(e) => setScoreFilter(e.target.value)}>
+              <Select label="Rubric Score" value={scoreFilter} onChange={(e) => setScoreFilter(e.target.value)}>
                 {SCORE_BANDS.map((s) => <option key={s} value={s}>{s}</option>)}
               </Select>
             </div>
             <div className="shortlist-filters" style={{ marginTop: 10 }}>
               <Select label="Ranking Mode" value={rankMode} onChange={(e) => setRankMode(e.target.value)}>
-                <option value="margawise">Margawise (default)</option>
-                <option value="rubric">Rubric Score</option>
-                <option value="manager">Manager Override</option>
+                <option value="rubric">Rubric score (default)</option>
+                <option value="manager">Manager override</option>
               </Select>
             </div>
             <div className="ic-auto-reject-panel">
               <div className="ic-auto-reject-grid">
-                <label className="form-field">
-                  <span className="form-label">Auto Reject if Margawise &lt;</span>
-                  <input
-                    className="form-input"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={autoRejectMargawiseLt}
-                    onChange={(e) => setAutoRejectMargawiseLt(e.target.value)}
-                  />
-                </label>
+                {rubricMode === 'margawise' && (
+                  <label className="form-field">
+                    <span className="form-label">Auto Reject if Margawise &lt;</span>
+                    <input
+                      className="form-input"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={autoRejectMargawiseLt}
+                      onChange={(e) => setAutoRejectMargawiseLt(e.target.value)}
+                    />
+                  </label>
+                )}
                 <label className="form-field">
                   <span className="form-label">Auto Reject if Rubric &lt;</span>
                   <input
@@ -827,24 +943,35 @@ export default function ApplicationsHub() {
             <Card className="section-card shortlist-list-card">
             <div className="section-header">
               <h3>All Startups Table</h3>
-              <p className="text-muted sm">Default sort uses Margawise score. Manager override available.</p>
+              <p className="text-muted sm">
+                {activeRubricLabel} · sorted by total score (highest first)
+              </p>
             </div>
             <div className="table-wrap">
-              <table className="data-table shortlist-table">
+              <table className="data-table shortlist-table ic-review-rubric-table">
                 <thead>
                   <tr>
                     <th>Order</th>
                     {rankMode === 'manager' && <th>Manager Rank</th>}
                     <th>Startup</th>
                     <th>Sector</th>
-                    <th>Margawise</th>
-                    <th>Rubric</th>
+                    <th>{activeRubricLabel}</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((app, index) => (
+                  {filtered.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={6 + (rankMode === 'manager' ? 1 : 0)}
+                        className="ic-table-empty"
+                      >
+                        No startups match the current filters.
+                      </td>
+                    </tr>
+                  ) : (
+                  filtered.map((app, index) => (
                     <tr
                       key={app.id}
                       className={selected?.id === app.id ? 'ic-row-selected' : ''}
@@ -870,11 +997,6 @@ export default function ApplicationsHub() {
                       </td>
                       <td>{app.sector}</td>
                       <td>
-                        <span className={`fit-score fit-${getMargawiseScore(app) >= 80 ? 'high' : getMargawiseScore(app) >= 65 ? 'mid' : 'low'}`}>
-                          {getMargawiseScore(app)}
-                        </span>
-                      </td>
-                      <td>
                         <span className={`fit-score fit-${getRubricScore(app) >= 80 ? 'high' : getRubricScore(app) >= 65 ? 'mid' : 'low'}`}>
                           {getRubricScore(app)}
                         </span>
@@ -893,7 +1015,8 @@ export default function ApplicationsHub() {
                         </Button>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -912,11 +1035,8 @@ export default function ApplicationsHub() {
                 <p className="text-muted sm">{selected.oneLiner}</p>
               </div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <span className={`fit-score fit-${getMargawiseScore(selected) >= 80 ? 'high' : getMargawiseScore(selected) >= 65 ? 'mid' : 'low'}`}>
-                  Margawise {getMargawiseScore(selected)}
-                </span>
                 <span className={`fit-score fit-${getRubricScore(selected) >= 80 ? 'high' : getRubricScore(selected) >= 65 ? 'mid' : 'low'}`}>
-                  Rubric {getRubricScore(selected)}
+                  {activeRubricLabel} {getRubricScore(selected)}
                 </span>
               </div>
             </div>

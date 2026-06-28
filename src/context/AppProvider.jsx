@@ -75,6 +75,9 @@ export function AppProvider({ children }) {
         if (!next.reportMilestones?.length) {
           next = { ...next, reportMilestones: buildDefaultMilestones(next.id) }
         }
+        if (!next.registeredEventIds) {
+          next = { ...next, registeredEventIds: next.id === 'startup-1' ? ['ev-2'] : [] }
+        }
         return next
       }),
       mentors: (d.mentors || []).map((mentor) => ({
@@ -600,6 +603,29 @@ export function AppProvider({ children }) {
     )
   }
 
+  const registerForEvent = (startupId, eventId) => {
+    update((d) => ({
+      ...d,
+      startups: d.startups.map((s) => {
+        if (s.id !== startupId) return s
+        const ids = s.registeredEventIds || []
+        if (ids.includes(eventId)) return s
+        return { ...s, registeredEventIds: [...ids, eventId] }
+      }),
+    }))
+  }
+
+  const unregisterFromEvent = (startupId, eventId) => {
+    update((d) => ({
+      ...d,
+      startups: d.startups.map((s) =>
+        s.id !== startupId
+          ? s
+          : { ...s, registeredEventIds: (s.registeredEventIds || []).filter((id) => id !== eventId) }
+      ),
+    }))
+  }
+
   const resetApp = () => setData(resetData(createSeedData()))
 
   return (
@@ -641,6 +667,8 @@ export function AppProvider({ children }) {
         updateReportMilestones,
         submitDeliverableLink,
         updateDeliverableDeadline,
+        registerForEvent,
+        unregisterFromEvent,
         resetApp,
       }}
     >

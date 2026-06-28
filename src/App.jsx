@@ -3,7 +3,6 @@ import { AppProvider } from './context/AppProvider'
 import { ProtectedRoute, FounderRoute } from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Onboarding from './pages/founder/Onboarding'
-import FounderDashboard from './pages/founder/FounderDashboard'
 import AddInterview from './pages/founder/AddInterview'
 import MentorMarketplace from './pages/founder/MentorMarketplace'
 import MentorProfileView from './pages/founder/MentorProfileView'
@@ -12,6 +11,7 @@ import Payment from './pages/founder/Payment'
 import BookingSuccess from './pages/founder/BookingSuccess'
 import FounderReviewDashboard from './pages/founder/FounderReviewDashboard'
 import FounderTargetManager from './pages/founder/FounderTargetManager'
+import FounderEvents from './pages/founder/FounderEvents'
 import MentorDashboardHome from './pages/mentor/MentorDashboardHome'
 import MentorStartupReport from './pages/mentor/MentorStartupReport'
 import MentorProfile from './pages/mentor/MentorProfile'
@@ -36,8 +36,9 @@ export default function App() {
           <Route path="/" element={<Login />} />
 
           <Route path="/founder/onboarding" element={<FounderRoute><Onboarding /></FounderRoute>} />
-          <Route path="/founder/dashboard" element={<FounderRoute><FounderDashboard /></FounderRoute>} />
-          <Route path="/founder/targets" element={<FounderRoute><FounderTargetManager /></FounderRoute>} />
+          <Route path="/founder/dashboard" element={<FounderRoute><FounderTargetManager /></FounderRoute>} />
+          <Route path="/founder/targets" element={<Navigate to="/founder/dashboard" replace />} />
+          <Route path="/founder/events" element={<FounderRoute><FounderEvents /></FounderRoute>} />
           <Route path="/founder/reviews" element={<FounderRoute><FounderReviewDashboard /></FounderRoute>} />
           <Route path="/founder/interviews/add" element={<FounderRoute><AddInterview /></FounderRoute>} />
           <Route path="/founder/mentors" element={<FounderRoute><MentorMarketplace /></FounderRoute>} />

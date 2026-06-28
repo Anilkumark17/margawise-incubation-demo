@@ -122,7 +122,7 @@ export default function FounderTargetManager() {
       )}
 
       <PageHeader
-        title="Target Manager"
+        title="Dashboard"
         subtitle="Track deliverable deadlines and submit work for mentor and manager review"
       />
 

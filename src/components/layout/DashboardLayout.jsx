@@ -7,7 +7,7 @@ const SIDEBAR_KEY = 'margawise_sidebar_collapsed'
 const NAV = {
   founder: [
     { to: '/founder/dashboard', label: 'Dashboard', icon: '◫' },
-    { to: '/founder/targets', label: 'Targets', icon: '◈' },
+    { to: '/founder/events', label: 'Events', icon: '◷' },
     { to: '/founder/reviews', label: 'Reviews', icon: '▣' },
     { to: '/founder/mentors', label: 'Mentors', icon: '◎' },
   ],
